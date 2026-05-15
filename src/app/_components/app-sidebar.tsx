@@ -13,9 +13,9 @@ import {
 	IconEdit as SquarePen,
 } from '@/components/icons'
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useLocation, useParams } from 'react-router'
+import { Link, useLocation, useNavigate, useParams } from 'react-router'
 
-import { listProjects } from '@/app/_api/projects'
+import { useProjects } from '@/app/_components/use-projects'
 import {
 	Collapsible,
 	CollapsibleContent,
@@ -50,19 +50,20 @@ const primaryActions = [
 ]
 
 const settingsSections = [
-	{ label: 'Agent', icon: Bot },
-	{ label: 'Models', icon: SlidersHorizontal },
-	{ label: 'Permissions', icon: ShieldCheck },
-	{ label: 'Credentials', icon: KeyRound },
-	{ label: 'Data', icon: Database },
+	{ label: 'Appearance', icon: Bot, path: '/settings/appearance' },
+	{ label: 'Models', icon: SlidersHorizontal, path: '/settings/models' },
+	{ label: 'Permissions', icon: ShieldCheck, path: '/settings/permissions' },
+	{ label: 'Credentials', icon: KeyRound, path: '/settings/credentials' },
+	{ label: 'Data', icon: Database, path: '/settings/data' },
 ]
 
 export function AppSidebar() {
 	const { projectId, threadId } = useParams()
 	const { pathname } = useLocation()
+	const navigate = useNavigate()
 	const isSettingsRoute = pathname.startsWith('/settings')
 	const newChatPath = projectId ? `/projects/${projectId}/new` : '/home'
-	const projects = useMemo(() => listProjects(), [])
+	const { projects, loading, error, refresh } = useProjects()
 	const initialProjectState = useMemo(
 		() =>
 			Object.fromEntries(
@@ -86,6 +87,17 @@ export function AppSidebar() {
 			[projectId]: true,
 		}))
 	}, [projectId])
+
+	useEffect(() => {
+		setOpenProjects((current) => ({
+			...Object.fromEntries(
+				projects.map((project, index) => [
+					project.id,
+					current[project.id] ?? (index === 0 || project.id === projectId),
+				])
+			),
+		}))
+	}, [projectId, projects])
 
 	function setAllProjects(open: boolean) {
 		setOpenProjects(
@@ -127,11 +139,12 @@ export function AppSidebar() {
 							</SidebarGroupLabel>
 							<SidebarGroupContent>
 								<SidebarMenu className="gap-1">
-									{settingsSections.map((item, index) => (
+									{settingsSections.map((item) => (
 										<SidebarMenuItem key={item.label}>
 											<SidebarMenuButton
+												onClick={() => navigate(item.path)}
 												tooltip={item.label}
-												isActive={index === 0}
+												isActive={pathname === item.path}
 												className="font-normal">
 												<item.icon className="stroke-muted-foreground" />
 												<span className="text-muted-foreground">
@@ -202,7 +215,27 @@ export function AppSidebar() {
 							</SidebarGroupAction>
 							<SidebarGroupContent>
 								<SidebarMenu className="gap-1.5">
-									{projects.map((project) => (
+									{loading ? (
+										<SidebarMenuItem>
+											<SidebarMenuButton className="h-8 px-2 font-normal">
+												<span className="text-muted-foreground">
+													Loading projects...
+												</span>
+											</SidebarMenuButton>
+										</SidebarMenuItem>
+									) : null}
+									{error ? (
+										<SidebarMenuItem>
+											<SidebarMenuButton
+												className="h-auto min-h-8 px-2 py-2 font-normal"
+												onClick={() => void refresh()}>
+												<span className="text-destructive">
+													Failed to load projects. Click to retry.
+												</span>
+											</SidebarMenuButton>
+										</SidebarMenuItem>
+									) : null}
+									{!loading && !error && projects.map((project) => (
 										<SidebarMenuItem key={project.id}>
 											<Collapsible
 												className="group/collapsible"
