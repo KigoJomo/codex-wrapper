@@ -1,6 +1,7 @@
 import { Outlet, useParams } from 'react-router'
 
 import { getThread } from '@/app/_api/projects'
+import { useProjects } from '@/app/_components/use-projects'
 import {
 	SidebarInset,
 	SidebarProvider,
@@ -11,13 +12,15 @@ import { WindowTitleBar } from './window-title-bar'
 
 export function AppLayout() {
 	const { projectId, threadId } = useParams()
-	const activeThread = getThread(projectId, threadId)
+	const { projects } = useProjects()
+	const activeThread = getThread(projects, projectId, threadId)
 
 	return (
 		<>
 			<main className="relative h-svh overflow-hidden pt-10">
-				<div className="content h-[calc(100svh-2.5rem)] w-full bg-background">
+				<div className="content h-[calc(100svh-2.5rem)] w-full bg-background relative">
 					<SidebarProvider>
+					<SidebarTrigger className="absolute top-4.5 right-4 z-20" />
 						<WindowTitleBar />
 						<AppSidebar />
 						<SidebarInset className="min-h-full overflow-hidden">
@@ -27,8 +30,6 @@ export function AppLayout() {
 										{activeThread.thread.title}
 									</p>
 								) : null}
-
-								<SidebarTrigger />
 							</header>
 							<Outlet />
 						</SidebarInset>

@@ -2,13 +2,19 @@ import { Navigate, useParams } from "react-router"
 
 import { ChatComposer } from "@/app/_components/chat-composer"
 import { getThread } from "@/app/_api/projects"
+import { useProjects } from "@/app/_components/use-projects"
 
 export function ThreadPage() {
   const { projectId, threadId } = useParams()
-  const match = getThread(projectId, threadId)
+  const { projects, loading } = useProjects()
+  const match = getThread(projects, projectId, threadId)
+
+  if (!loading && !match) {
+    return <Navigate to="/home" replace />
+  }
 
   if (!match) {
-    return <Navigate to="/home" replace />
+    return null
   }
 
   return (
