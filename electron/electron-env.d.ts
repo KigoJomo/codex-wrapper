@@ -1,27 +1,28 @@
 /// <reference types="vite-plugin-electron/electron-env" />
 
 declare namespace NodeJS {
-  interface ProcessEnv {
-    /**
-     * The built directory structure
-     *
-     * ```tree
-     * ├─┬─┬ dist
-     * │ │ └── index.html
-     * │ │
-     * │ ├─┬ dist-electron
-     * │ │ ├── main.js
-     * │ │ └── preload.js
-     * │
-     * ```
-     */
-    APP_ROOT: string
-    /** /dist/ or /public/ */
-    VITE_PUBLIC: string
-  }
+	interface ProcessEnv {
+		APP_ROOT: string
+		VITE_PUBLIC: string
+	}
 }
 
 // Used in Renderer process, expose in `preload.ts`
 interface Window {
-  ipcRenderer: import('electron').IpcRenderer
+	ipcRenderer: import('electron').IpcRenderer
+	codex: {
+		getStatus: () => Promise<{
+			installed: boolean
+			version: string | null
+			appServerAvailable: boolean
+			authenticated: boolean | null
+			authMessage: string
+			subscription: string | null
+			subscriptionPlanType: string | null
+			message: string
+		}>
+		threadsRaw: () => Promise<
+			import('./codex-threads').CodexThreadListResult
+		>
+	}
 }

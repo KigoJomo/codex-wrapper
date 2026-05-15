@@ -1,6 +1,8 @@
 import { app, BrowserWindow, ipcMain, Menu } from 'electron'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
+import { getCodexStatus } from './codex-status'
+import { getCodexThreadsRaw } from './codex-threads'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -22,7 +24,7 @@ export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist')
 
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST
 
-const MIN_WINDOW_WIDTH = 960
+const MIN_WINDOW_WIDTH = 600
 
 let win: BrowserWindow | null
 
@@ -31,7 +33,7 @@ function createWindow() {
     frame: false,
     icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
     minWidth: MIN_WINDOW_WIDTH,
-    minHeight: MIN_WINDOW_WIDTH * 0.7,
+    minHeight: MIN_WINDOW_WIDTH * 1,
     show: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.mjs'),
@@ -76,6 +78,14 @@ ipcMain.on('window:toggle-maximize', () => {
 
 ipcMain.on('window:close', () => {
   win?.close()
+})
+
+ipcMain.handle("codex:get-status", async () => {
+  return getCodexStatus()
+})
+
+ipcMain.handle('codex:threads-raw', async () => {
+  return getCodexThreadsRaw()
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common
