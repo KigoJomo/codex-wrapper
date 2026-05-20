@@ -1,7 +1,9 @@
 {
   "name": "codex-wrapper",
+  "author": "Kigo.Ke",
+  "description": "A minimal codex wrapper.",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
