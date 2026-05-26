@@ -109,7 +109,7 @@ export function AppSidebar() {
 
 	return (
 		<Sidebar
-			side="right"
+			side="left"
 			collapsible="offcanvas"
 			variant="floating"
 			className="top-10 h-[calc(100svh-2.5rem)]">
@@ -117,7 +117,7 @@ export function AppSidebar() {
 				{isSettingsRoute ? (
 					<>
 						<SidebarGroup>
-							<SidebarGroupContent>
+							<SidebarGroupContent className="pl-6">
 								<SidebarMenu>
 									<SidebarMenuItem>
 										<SidebarMenuButton asChild tooltip="Back to app">
@@ -162,8 +162,8 @@ export function AppSidebar() {
 						<SidebarGroup>
 							<SidebarGroupContent>
 								<SidebarMenu>
-									{primaryActions.map((item) => (
-										<SidebarMenuItem key={item.label}>
+									{primaryActions.map((item, index) => (
+										<SidebarMenuItem key={item.label} className={index === 0 ? 'pl-6' : ''}>
 											{item.kind === 'new-chat' ? (
 												<SidebarMenuButton asChild tooltip={item.label}>
 													<Link to={newChatPath}>

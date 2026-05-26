@@ -30,15 +30,16 @@ let win: BrowserWindow | null
 
 function createWindow() {
   win = new BrowserWindow({
-    frame: false,
-    icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
-    minWidth: MIN_WINDOW_WIDTH,
-    minHeight: MIN_WINDOW_WIDTH * 1,
-    show: false,
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.mjs'),
-    },
-  })
+		frame: false,
+		icon: path.join(__dirname, '../build/icon.png'),
+		// icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
+		minWidth: MIN_WINDOW_WIDTH,
+		minHeight: MIN_WINDOW_WIDTH * 1,
+		show: false,
+		webPreferences: {
+			preload: path.join(__dirname, 'preload.mjs'),
+		},
+	})
 
   Menu.setApplicationMenu(null)
 

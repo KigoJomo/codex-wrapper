@@ -20,7 +20,7 @@ export function AppLayout() {
 			<main className="relative h-svh overflow-hidden pt-10">
 				<div className="content h-[calc(100svh-2.5rem)] w-full bg-background relative">
 					<SidebarProvider>
-					<SidebarTrigger className="absolute top-4.5 right-4 z-20" />
+					<SidebarTrigger className="absolute top-4.5 left-4 z-20" />
 						<WindowTitleBar />
 						<AppSidebar />
 						<SidebarInset className="min-h-full overflow-hidden">
