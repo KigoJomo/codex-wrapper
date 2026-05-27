@@ -1,12 +1,12 @@
-import { useState } from "react"
+import { useState, type FormEvent } from "react"
 
 import {
+  IconArrowUp as ArrowUp,
   IconChevronDown as ChevronDown,
   IconEyeCheck as EyeCheck,
   IconHandStop as HandStop,
   IconMicrophone as Mic,
   IconPaperclip as Paperclip,
-  IconSend as Send,
   IconSettings as Settings,
   IconShieldCheck as ShieldCheck,
 } from "@/components/icons"
@@ -62,6 +62,7 @@ type PermissionValue = (typeof permissions)[number]["value"]
 export function ChatComposer({ className }: ChatComposerProps) {
   const models = listModels()
   const selectedModel = getDefaultModel()
+  const [message, setMessage] = useState("")
   const [permissionValue, setPermissionValue] =
     useState<PermissionValue>("full-access")
   const selectedPermission =
@@ -69,8 +70,19 @@ export function ChatComposer({ className }: ChatComposerProps) {
     permissions[0]
   const SelectedPermissionIcon = selectedPermission.icon
 
+  function handleSubmit(event?: FormEvent<HTMLFormElement>) {
+    event?.preventDefault()
+
+    if (!message.trim()) {
+      return
+    }
+
+    setMessage("")
+  }
+
   return (
-    <div
+    <form
+      onSubmit={handleSubmit}
       className={cn(
         "w-full max-w-3xl rounded-2xl border border-border/80 bg-card/95 p-1 shadow-[0_18px_48px_-28px_rgba(15,23,42,0.45)] transition-colors focus-within:border-primary/45 focus-within:ring-4 focus-within:ring-primary/10 dark:bg-card/90",
         className
@@ -80,6 +92,14 @@ export function ChatComposer({ className }: ChatComposerProps) {
         <Textarea
           aria-label="Message"
           placeholder="Ask Codex anything. @ to use plugins or mention files"
+          value={message}
+          onChange={(event) => setMessage(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" && !event.shiftKey) {
+              event.preventDefault()
+              event.currentTarget.form?.requestSubmit()
+            }
+          }}
           className="max-h-56 min-h-28 resize-none rounded-none border-0 bg-transparent px-4 pt-4 pb-3 text-[0.95rem] leading-6 shadow-none placeholder:text-muted-foreground/70 focus-visible:ring-0"
         />
 
@@ -88,6 +108,7 @@ export function ChatComposer({ className }: ChatComposerProps) {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
+                  type="button"
                   variant="ghost"
                   size="icon-sm"
                   aria-label="Attach context"
@@ -102,6 +123,7 @@ export function ChatComposer({ className }: ChatComposerProps) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
+                  type="button"
                   variant="ghost"
                   size="sm"
                   className="gap-1.5 px-1.5 text-xs font-semibold text-orange-600 hover:bg-orange-500/10 hover:text-orange-700 aria-expanded:bg-orange-500/10 dark:text-orange-400 dark:hover:text-orange-300"
@@ -146,6 +168,7 @@ export function ChatComposer({ className }: ChatComposerProps) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
+                  type="button"
                   variant="ghost"
                   size="sm"
                   className="min-w-0 max-w-44 justify-start text-xs text-muted-foreground hover:text-foreground"
@@ -174,6 +197,7 @@ export function ChatComposer({ className }: ChatComposerProps) {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
+                  type="button"
                   variant="ghost"
                   size="icon-sm"
                   aria-label="Voice input"
@@ -186,15 +210,17 @@ export function ChatComposer({ className }: ChatComposerProps) {
             </Tooltip>
 
             <Button
+              type="submit"
               size="icon"
               aria-label="Send message"
+              disabled={!message.trim()}
               className="shadow-sm shadow-primary/20"
             >
-              <Send />
+              <ArrowUp />
             </Button>
           </div>
         </div>
       </div>
-    </div>
+    </form>
   )
 }
