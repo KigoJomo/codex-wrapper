@@ -5,7 +5,6 @@ import { useProjects } from '@/app/_components/use-projects'
 import {
 	SidebarInset,
 	SidebarProvider,
-	SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { AppSidebar } from './app-sidebar'
 import { WindowTitleBar } from './window-title-bar'
@@ -17,21 +16,15 @@ export function AppLayout() {
 
 	return (
 		<>
-			<main className="relative h-svh overflow-hidden pt-10">
-				<div className="content h-[calc(100svh-2.5rem)] w-full bg-background relative">
-					<SidebarProvider>
-					<SidebarTrigger className="absolute top-4.5 left-4 z-20" />
-						<WindowTitleBar />
+			<main className="relative h-svh overflow-hidden">
+				<div className="content relative h-svh w-full bg-background">
+					<SidebarProvider className="h-full min-h-0">
+						<WindowTitleBar title={activeThread?.thread.title} />
 						<AppSidebar />
-						<SidebarInset className="min-h-full overflow-hidden">
-							<header className="flex h-12 shrink-0 items-center justify-between pl-6 pr-4">
-								{activeThread ? (
-									<p className="truncate text-sm font-medium">
-										{activeThread.thread.title}
-									</p>
-								) : null}
-							</header>
-							<Outlet />
+						<SidebarInset className="flex h-full min-h-0 flex-col overflow-hidden pt-10">
+							<div className="min-h-0 flex-1 overflow-hidden">
+								<Outlet />
+							</div>
 						</SidebarInset>
 					</SidebarProvider>
 				</div>
