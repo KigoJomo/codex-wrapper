@@ -24,5 +24,12 @@ interface Window {
 		threadsRaw: () => Promise<
 			import('./codex-threads').CodexThreadListResult
 		>
+		threadTurns(threadId: string): Promise<
+			import('./codex-threads').CodexThreadTurnsResult
+		>
+		threadSession(threadId: string): Promise<
+			import('./codex-threads').CodexThreadSessionResult
+		>
+		openExternal(url: string): Promise<void>
 	}
 }

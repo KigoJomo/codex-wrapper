@@ -27,4 +27,13 @@ contextBridge.exposeInMainWorld('codex', {
 	threadsRaw() {
 		return ipcRenderer.invoke('codex:threads-raw')
 	},
+	threadTurns(threadId: string) {
+		return ipcRenderer.invoke('codex:thread-turns', threadId)
+	},
+	threadSession(threadId: string) {
+		return ipcRenderer.invoke('codex:thread-session', threadId)
+	},
+	openExternal(url: string) {
+		return ipcRenderer.invoke('codex:open-external', url)
+	},
 })
