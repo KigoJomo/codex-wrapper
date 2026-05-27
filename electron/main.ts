@@ -1,8 +1,12 @@
-import { app, BrowserWindow, ipcMain, Menu } from 'electron'
+import { app, BrowserWindow, ipcMain, Menu, shell } from 'electron'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import { getCodexStatus } from './codex-status'
-import { getCodexThreadsRaw } from './codex-threads'
+import {
+	getCodexThreadSession,
+	getCodexThreadTurns,
+	getCodexThreadsRaw,
+} from './codex-threads'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -38,6 +42,7 @@ function createWindow() {
 		show: false,
 		webPreferences: {
 			preload: path.join(__dirname, 'preload.mjs'),
+			webviewTag: true,
 		},
 	})
 
@@ -87,6 +92,18 @@ ipcMain.handle("codex:get-status", async () => {
 
 ipcMain.handle('codex:threads-raw', async () => {
   return getCodexThreadsRaw()
+})
+
+ipcMain.handle('codex:thread-turns', async (_event, threadId: string) => {
+  return getCodexThreadTurns(threadId)
+})
+
+ipcMain.handle('codex:thread-session', async (_event, threadId: string) => {
+  return getCodexThreadSession(threadId)
+})
+
+ipcMain.handle('codex:open-external', async (_event, url: string) => {
+  return shell.openExternal(url)
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common
