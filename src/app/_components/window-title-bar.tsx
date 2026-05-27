@@ -1,7 +1,9 @@
 import { Button } from '@/components/ui/button'
+import { useSidebar } from '@/components/ui/sidebar'
 import {
 	IconArrowLeft as ArrowLeft,
 	IconArrowRight as ArrowRight,
+	IconLayoutSidebarFilled as SidebarIcon,
 	IconMinus as Minus,
 	IconSquare as Square,
 	IconX as X,
@@ -9,9 +11,15 @@ import {
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 
-export function WindowTitleBar() {
+type WindowTitleBarProps = {
+	title?: string | null
+}
+
+export function WindowTitleBar({ title }: WindowTitleBarProps) {
 	const { pathname } = useLocation()
 	const navigate = useNavigate()
+	const { isMobile, state, toggleSidebar } = useSidebar()
+	const showSidebarTrigger = isMobile || state === 'collapsed'
 	const [historyState, setHistoryState] = useState(() => ({
 		canGoBack: window.history.state?.idx > 0,
 		canGoForward: false,
@@ -29,8 +37,22 @@ export function WindowTitleBar() {
 	}, [pathname])
 
 	return (
-		<nav className="fixed inset-x-0 top-0 z-50 flex h-10 w-full items-center justify-between gap-4 border-b bg-background pl-2 [app-region:drag]">
-			<div className="flex items-center gap-1 [app-region:no-drag]">
+		<nav
+			className="fixed top-0 right-0 z-50 flex h-10 items-center justify-between gap-4 border-b bg-background pl-2 transition-[left] duration-200 ease-linear [app-region:drag]"
+			style={{
+				left: !isMobile && state === 'expanded' ? 'var(--sidebar-width)' : 0,
+			}}>
+			<div className="flex min-w-0 items-center gap-2 [app-region:no-drag]">
+				{showSidebarTrigger ? (
+					<Button
+						variant="ghost"
+						size="icon-sm"
+						aria-label="Open sidebar"
+						title="Open sidebar"
+						onClick={toggleSidebar}>
+						<SidebarIcon />
+					</Button>
+				) : null}
 				<div className="flex items-center gap-1">
 					<Button
 						variant="ghost"
@@ -49,6 +71,11 @@ export function WindowTitleBar() {
 						<ArrowRight />
 					</Button>
 				</div>
+				{title ? (
+					<p className="min-w-0 truncate text-sm font-semibold">
+						{title}
+					</p>
+				) : null}
 			</div>
 
 			<div className="flex items-center gap-1 [app-region:no-drag]">
