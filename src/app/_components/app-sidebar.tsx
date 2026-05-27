@@ -1,6 +1,7 @@
 import {
 	IconArrowLeft as ArrowLeft,
 	IconRobot as Bot,
+	IconLayoutSidebarFilled as SidebarIcon,
 	IconChevronRight as ChevronRight,
 	IconDatabase as Database,
 	IconFolder as Folder,
@@ -37,7 +38,13 @@ import {
 	SidebarMenuSubButton,
 	SidebarMenuSubItem,
 	SidebarRail,
+	SidebarTrigger,
 } from '@/components/ui/sidebar'
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from '@/components/ui/tooltip'
 import {
 	IconArrowsDiagonal,
 	IconArrowsDiagonalMinimize,
@@ -112,7 +119,7 @@ export function AppSidebar() {
 			side="left"
 			collapsible="offcanvas"
 			variant="floating"
-			className="top-10 h-[calc(100svh-2.5rem)]">
+			className="absolute inset-y-0 h-svh">
 			<SidebarContent>
 				{isSettingsRoute ? (
 					<>
@@ -162,8 +169,28 @@ export function AppSidebar() {
 						<SidebarGroup>
 							<SidebarGroupContent>
 								<SidebarMenu>
-									{primaryActions.map((item, index) => (
-										<SidebarMenuItem key={item.label} className={index === 0 ? 'pl-6' : ''}>
+									<SidebarMenuItem className="pl-0">
+										<div className="flex h-8 items-center gap-1 px-1">
+											<SidebarTrigger
+												aria-label="Toggle sidebar"
+												className="size-7 shrink-0 rounded-md"
+											>
+												<SidebarIcon />
+											</SidebarTrigger>
+											<Link
+												to={newChatPath}
+												className="inline-flex h-7 items-center gap-1 rounded-md px-2 text-xs font-medium text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+											>
+												<Plus className="size-3.5" />
+												<span>New Chat</span>
+											</Link>
+										</div>
+									</SidebarMenuItem>
+									{primaryActions.map((item) => (
+										<SidebarMenuItem
+											key={item.label}
+											className={item.kind === 'new-chat' ? 'hidden' : ''}
+										>
 											{item.kind === 'new-chat' ? (
 												<SidebarMenuButton asChild tooltip={item.label}>
 													<Link to={newChatPath}>
@@ -274,24 +301,34 @@ export function AppSidebar() {
 														<SidebarMenuSub className="mt-1 gap-1.5">
 															{project.threads.map((thread) => (
 																<SidebarMenuSubItem key={thread.id}>
-																	<SidebarMenuSubButton
-																		asChild
-																		isActive={
-																			project.id === projectId &&
-																			thread.id === threadId
-																		}
-																		className="h-7 pr-8 text-xs font-normal">
-																		<Link
-																			to={`/projects/${project.id}/threads/${thread.id}`}
-																			className="flex min-w-0 flex-1 items-center justify-between gap-2">
-																			<span className="truncate text-muted-foreground">
-																				{thread.title}
-																			</span>
-																			<span className="shrink-0 text-[0.7rem] font-normal text-muted-foreground">
-																				{thread.time}
-																			</span>
-																		</Link>
-																	</SidebarMenuSubButton>
+																	<Tooltip>
+																		<TooltipTrigger asChild>
+																			<SidebarMenuSubButton
+																				asChild
+																				isActive={
+																					project.id === projectId &&
+																					thread.id === threadId
+																				}
+																				className="h-7 pr-8 text-xs font-normal">
+																				<Link
+																					to={`/projects/${project.id}/threads/${thread.id}`}
+																					className="flex min-w-0 flex-1 items-center justify-between gap-2">
+																					<span className="truncate text-muted-foreground">
+																						{thread.title}
+																					</span>
+																					<span className="shrink-0 text-[0.7rem] font-normal text-muted-foreground">
+																						{thread.time}
+																					</span>
+																				</Link>
+																			</SidebarMenuSubButton>
+																		</TooltipTrigger>
+																		<TooltipContent
+																			side="right"
+																			align="center"
+																			className="max-w-80 text-left leading-5">
+																			{thread.title}
+																		</TooltipContent>
+																	</Tooltip>
 																</SidebarMenuSubItem>
 															))}
 														</SidebarMenuSub>
