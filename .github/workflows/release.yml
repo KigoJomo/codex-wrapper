@@ -26,7 +26,7 @@ jobs:
         run: npm ci
       
       - name: Build Installer
-        run: npm run build
+        run: npm run build -- --publish never
       
       - name: Upload Github Release assets
         uses: softprops/action-gh-release@v2
