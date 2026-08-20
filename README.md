@@ -1,30 +1,40 @@
-# React + TypeScript + Vite
+# Codex Wrapper
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An Electron reader for the Codex work already stored on your machine. It groups threads by project and renders the conversation, tool activity, timings, and file diffs in a desktop UI.
 
-Currently, two official plugins are available:
+## What works
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Checks whether the local Codex CLI is installed and signed in.
+- Reads active threads through `codex app-server`.
+- Falls back to local session JSONL when a thread needs more detailed work and diff data.
+- Groups threads by working directory and shows their Git branch when available.
+- Renders Markdown, syntax-highlighted code, tool calls, and patch diffs.
+- Stores appearance, link-opening, and model-display preferences locally.
 
-## Expanding the ESLint configuration
+## Current limit
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+This is a reader today. The composer, model picker, attachments, voice button, and permission controls are present in the interface, but submitting a message does not start or resume a Codex thread yet.
 
-- Configure the top-level `parserOptions` property like this:
+## Requirements
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+- Node.js and npm
+- A working `codex` command on `PATH`
+- A signed-in Codex CLI account
+
+## Development
+
+```bash
+npm install
+npm run dev
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+The renderer uses React, Vite, and React Router. Electron owns the native window and talks to the Codex app server through a narrow preload bridge.
+
+## Checks and packages
+
+```bash
+npm run lint
+npm run build
+```
+
+`npm run build` runs TypeScript, builds the renderer, and packages the app with electron-builder. The current release workflow publishes a Windows installer from version tags. macOS and Linux targets exist in the builder configuration but are not part of that workflow yet.
